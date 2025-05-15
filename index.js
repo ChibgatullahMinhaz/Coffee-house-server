@@ -11,7 +11,6 @@ app.use(express.urlencoded({ extended: true }));
 
 
 // MongoDB connection
-
 const uri = `mongodb+srv://${process.env.DB_NAME}:${process.env.DB_PASSWORD}@cluster0.cksixld.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
