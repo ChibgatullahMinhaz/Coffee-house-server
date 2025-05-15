@@ -23,26 +23,26 @@ const client = new MongoClient(uri, {
     }
 });
 
+
+// routes
+app.get('/', (req, res) => {
+    res.send('Hello World!');
+
+});
+
+
 const run = async () => {
     try {
         await client.connect();
 
         const coffeeCollection = client.db("coffeeDB").collection("coffees");
-
-
-        // routes
-        app.get('/', (req, res) => {
-            res.send('Hello World!');
-
-        });
-
         app.get('/coffees', async (req, res) => {
             const result = await coffeeCollection.find().toArray();
             res.send(result);
         })
- 
-        
-        
+
+
+
         // get coffee by id
         app.get('/coffees/:id', async (req, res) => {
             const id = req.params.id;
