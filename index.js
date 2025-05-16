@@ -7,7 +7,7 @@ const app = express();
 // middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
 
 
 // MongoDB connection
@@ -23,25 +23,21 @@ const client = new MongoClient(uri, {
 });
 
 
-// routes
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-
-});
-
 
 const run = async () => {
     try {
         await client.connect();
 
         const coffeeCollection = client.db("coffeeDB").collection("coffees");
+
+
         app.get('/coffees', async (req, res) => {
             const result = await coffeeCollection.find().toArray();
             res.send(result);
         })
 
 
-
+       
         // get coffee by id
         app.get('/coffees/:id', async (req, res) => {
             const id = req.params.id;
@@ -88,7 +84,9 @@ const run = async () => {
 run().catch(console.dir);
 
 
-
+app.get('/', (req, res) => {
+    res.send('Coffee server is getting hotter.')
+});
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
