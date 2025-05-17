@@ -25,6 +25,7 @@ const run = async () => {
     await client.connect();
 
     const coffeeCollection = client.db("coffeesDB").collection("coffees");
+    const usersCollection = client.db("coffeesDB").collection("users");
 
     app.get("/coffees", async (req, res) => {
       const result = await coffeeCollection.find().toArray();
@@ -48,17 +49,19 @@ const run = async () => {
 
     // update a coffee
     app.put("/coffees/:id", async (req, res) => {
-      const id = req.params.id;
-      const coffee = req.body;
-      console.log(coffee)
-      const query = { _id: new ObjectId(id) };
-      const updatedCoffee = {
-        $set: {
-          coffee,
-        },
-      };
-      const result = await coffeeCollection.updateOne(query, updatedCoffee);
-      res.send(result);
+      try {
+        const id = req.params.id;
+        const coffee = req.body;
+        const query = { _id: new ObjectId(id) };
+        const updatedCoffee = {
+          $set: coffee,
+        };
+        const result = await coffeeCollection.updateOne(query, updatedCoffee);
+        res.send(result);
+      } catch (err) {
+        console.error(err);
+        res.status(500).send({ error: "Update failed" });
+      }
     });
 
     // delete a coffee
