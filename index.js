@@ -22,7 +22,6 @@ const client = new MongoClient(uri, {
 
 const run = async () => {
   try {
-
     const coffeeCollection = client.db("coffeesDB").collection("coffees");
     const usersCollection = client.db("coffeesDB").collection("users");
     const usersThirdPartyCollection = client
@@ -39,22 +38,21 @@ const run = async () => {
       res.send(result);
     });
 
-
     // get third party users
     app.get("/thirdPartyUsers", async (req, res) => {
       const result = await usersThirdPartyCollection.find().toArray();
       res.send(result);
     });
-    app.get("/thirdPartyUsers/:email", async (req, res) => {
-      const email = req.params.email;
-      const query = { email: email };
-      const result = await usersThirdPartyCollection.findOne(query);
-      res.send(result);
-    });
 
-    // get user by email
-    app.get("/user", async (req, res) => {
-      const result = await usersThirdPartyCollection.find().toArray();
+    // get third party user by email
+    app.get("/thirdPartyUsers", async (req, res) => {
+      const email = req.query.email;
+      // Case-insensitive match
+      const query = { email: { $regex: new RegExp(`^${email}$`, "i") } };
+      const result = await usersThirdPartyCollection.findOne(query);
+      if (!result) {
+        return res.status(404).send({ message: "User not found" });
+      }
       res.send(result);
     });
 
@@ -66,12 +64,25 @@ const run = async () => {
       res.send(result);
     });
 
-
     // get user by id
     app.get("/users/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await coffeeCollection.findOne(query);
+      res.send(result);
+    });
+
+    // get active users
+    app.get("/activeUsers", async (req, res) => {
+      const query = { isOnline: true };
+      const result = await usersCollection.find(query).toArray();
+      console.log(result);
+      res.send(result);
+    });
+    app.get("/deactivateUsers", async (req, res) => {
+      const query = { isOnline: false };
+      const result = await usersCollection.find(query).toArray();
+      console.log(result);
       res.send(result);
     });
 
@@ -92,6 +103,17 @@ const run = async () => {
     app.post("/thirdPartyUsers", async (req, res) => {
       const user = req.body;
       const result = await usersThirdPartyCollection.insertOne(user);
+      res.send(result);
+    });
+
+    app.patch("/users", async (req, res) => {
+      const { email, isOnline, lastSignInTime } = req.body;
+      const query = { email: email };
+      console.log(email, lastSignInTime, isOnline);
+      const updatedDoc = {
+        $set: { lastSignInTime: lastSignInTime, isOnline: isOnline },
+      };
+      const result = await usersCollection.updateOne(query, updatedDoc);
       res.send(result);
     });
 
@@ -127,16 +149,8 @@ const run = async () => {
       const result = await coffeeCollection.deleteOne(query);
       res.send(result);
     });
-
-    // Send a ping to confirm a successful connection
-
-
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
   } finally {
-
+    console.log("server running");
   }
 };
 run().catch(console.dir);
