@@ -26,9 +26,22 @@ const run = async () => {
 
     const coffeeCollection = client.db("coffeesDB").collection("coffees");
     const usersCollection = client.db("coffeesDB").collection("users");
+    const usersThirdPartyCollection = client
+      .db("coffeesDB")
+      .collection("thirdPartyUsers");
 
     app.get("/coffees", async (req, res) => {
       const result = await coffeeCollection.find().toArray();
+      res.send(result);
+    });
+    // get users
+    app.get("/users", async (req, res) => {
+      const result = await usersCollection.find().toArray();
+      res.send(result);
+    });
+    // get third party users
+    app.get("/thirdPartyUsers", async (req, res) => {
+      const result = await usersThirdPartyCollection.find().toArray();
       res.send(result);
     });
 
@@ -44,6 +57,17 @@ const run = async () => {
     app.post("/coffees", async (req, res) => {
       const coffee = req.body;
       const result = await coffeeCollection.insertOne(coffee);
+      res.send(result);
+    });
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const result = await usersCollection.insertOne(user);
+      res.send(result);
+    });
+    // add a third party user
+    app.post("/thirdPartyUsers", async (req, res) => {
+      const user = req.body;
+      const result = await usersThirdPartyCollection.insertOne(user);
       res.send(result);
     });
 
