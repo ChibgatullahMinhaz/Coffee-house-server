@@ -22,7 +22,6 @@ const client = new MongoClient(uri, {
 
 const run = async () => {
   try {
-    await client.connect();
 
     const coffeeCollection = client.db("coffeesDB").collection("coffees");
     const usersCollection = client.db("coffeesDB").collection("users");
@@ -39,8 +38,22 @@ const run = async () => {
       const result = await usersCollection.find().toArray();
       res.send(result);
     });
+
+
     // get third party users
     app.get("/thirdPartyUsers", async (req, res) => {
+      const result = await usersThirdPartyCollection.find().toArray();
+      res.send(result);
+    });
+    app.get("/thirdPartyUsers/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await usersThirdPartyCollection.findOne(query);
+      res.send(result);
+    });
+
+    // get user by email
+    app.get("/user", async (req, res) => {
       const result = await usersThirdPartyCollection.find().toArray();
       res.send(result);
     });
@@ -53,17 +66,28 @@ const run = async () => {
       res.send(result);
     });
 
+
+    // get user by id
+    app.get("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await coffeeCollection.findOne(query);
+      res.send(result);
+    });
+
     // add a coffee
     app.post("/coffees", async (req, res) => {
       const coffee = req.body;
       const result = await coffeeCollection.insertOne(coffee);
       res.send(result);
     });
+    // add a user
     app.post("/users", async (req, res) => {
       const user = req.body;
       const result = await usersCollection.insertOne(user);
       res.send(result);
     });
+
     // add a third party user
     app.post("/thirdPartyUsers", async (req, res) => {
       const user = req.body;
@@ -96,12 +120,23 @@ const run = async () => {
       res.send(result);
     });
 
+    // delete a user
+    app.delete("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await coffeeCollection.deleteOne(query);
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
+
+
     await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
   } finally {
+
   }
 };
 run().catch(console.dir);
