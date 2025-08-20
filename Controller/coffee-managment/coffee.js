@@ -2,16 +2,16 @@ const { getDB } = require("../../Config/db");
 
 exports.getAllCoffee = async (req, res) => {
     const db = getDB()
-    const coffeeCollection = db.collection("coffeesDB")
+    const coffeeCollection = db.collection("coffees")
     const result = await coffeeCollection.find().toArray();
     res.send(result);
 }
 
 // update a coffee
-app.put("/coffees/:id", async (req, res) => {
+exports.updateCoffee = async (req, res) => {
     try {
         const db = getDB()
-        const coffeeCollection = db.collection("coffeesDB")
+        const coffeeCollection = db.collection("coffees")
         const id = req.params.id;
         const coffee = req.body;
         const query = { _id: new ObjectId(id) };
@@ -24,13 +24,14 @@ app.put("/coffees/:id", async (req, res) => {
         console.error(err);
         res.status(500).send({ error: "Update failed" });
     }
-});
+}
+
 
 // delete a coffee
-app.delete("/coffees/:id", async (req, res) => {
+exports.deleteCoffee = async (req, res) => {
     try {
         const db = getDB()
-        const coffeeCollection = db.collection("coffeesDB")
+        const coffeeCollection = db.collection("coffees")
         const id = req.params.id;
         const query = { _id: new ObjectId(id) };
         const result = await coffeeCollection.deleteOne(query);
@@ -38,14 +39,14 @@ app.delete("/coffees/:id", async (req, res) => {
     } catch (error) {
         res.status(500).json('internal server error')
     }
-});
+}
 
 
 // add a coffee
 exports.addOneCoffee = async (req, res) => {
     try {
         const db = getDB()
-        const coffeeCollection = db.collection("coffeesDB")
+        const coffeeCollection = db.collection("coffees")
         res.send(result);
         const coffee = req.body;
         const result = await coffeeCollection.insertOne(coffee);
@@ -60,7 +61,7 @@ exports.addOneCoffee = async (req, res) => {
 exports.getCoffeeDetails = async (req, res) => {
     try {
         const db = getDB()
-        const coffeeCollection = db.collection("coffeesDB")
+        const coffeeCollection = db.collection("coffees")
         const id = req.params.id;
         const query = { _id: new ObjectId(id) };
         const result = await coffeeCollection.findOne(query);
