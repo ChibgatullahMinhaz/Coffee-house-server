@@ -1,3 +1,11 @@
+exports.getServer = (req, res) => {
+  res.status(200).send("server is Learning....");
+};
+
+
+
+
+
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
