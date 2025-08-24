@@ -1,40 +1,57 @@
 const { getDB } = require("../../Config/db");
 
-exports.getAllCoffee = async (req, res) => {
-    const db = getDB()
-    const coffeeCollection = db.collection("coffees")
-    const result = await coffeeCollection.find().toArray();
-    res.send(result);
-}
+//models 
+const Coffee = require("../../models/coffee.model");
 
-// update a coffee
-exports.updateCoffee = async (req, res) => {
+exports.getAllCoffee = async (req, res) => {
     try {
-        const db = getDB()
-        const coffeeCollection = db.collection("coffees")
-        const id = req.params.id;
-        const coffee = req.body;
-        const query = { _id: new ObjectId(id) };
-        const updatedCoffee = {
-            $set: coffee,
-        };
-        const result = await coffeeCollection.updateOne(query, updatedCoffee);
-        res.send(result);
+        const coffee = await Coffee.find({});
+        res.status(200).send(coffee)
     } catch (err) {
-        console.error(err);
-        res.status(500).send({ error: "Update failed" });
+        console.error('Error finding users:', err);
+        res.status(500).json('internal server error ', err)
     }
 }
 
+// update a coffee
+//@ put operation
+//@ update coffee data 
+exports.updateCoffee = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const coffee = req.body;
 
-// delete a coffee
+        // Check product exists
+        const existing = await Coffee.findById(id);
+        if (!existing) {
+            return res.status(404).json({ msg: "Coffee not found" });
+        }
+
+        // Update product
+        const updatedCoffee = await Coffee.findByIdAndUpdate(id, coffee, {
+            new: true,
+        });
+
+        res.json(updatedCoffee);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Update failed" });
+    }
+};
+
+
+
+// @delete a coffee
+
 exports.deleteCoffee = async (req, res) => {
     try {
-        const db = getDB()
-        const coffeeCollection = db.collection("coffees")
-        const id = req.params.id;
-        const query = { _id: new ObjectId(id) };
-        const result = await coffeeCollection.deleteOne(query);
+
+        const query = req.params.id;
+        const cof = await Coffee.findById(query)
+        if (!cof) {
+            return res.status(404).send({ msg: "coffee not found" })
+        }
+        const result = await Coffee.findByIdAndDelete(query,);
         res.send(result);
     } catch (error) {
         res.status(500).json('internal server error')
@@ -43,16 +60,20 @@ exports.deleteCoffee = async (req, res) => {
 
 
 // add a coffee
+// @ save on DB
 exports.addOneCoffee = async (req, res) => {
+    const coffeeData = req.body;
     try {
-        const db = getDB()
-        const coffeeCollection = db.collection("coffees")
-        res.send(result);
-        const coffee = req.body;
-        const result = await coffeeCollection.insertOne(coffee);
-        res.send(result);
+        //@ new coffee object with validate 
+        const coffee = await Coffee(coffeeData)
+        // @ save on db 
+        const result = await coffee.save()
+        res.status(201).send(result);
     } catch (error) {
-        res.status(500).json('internal server error')
+        if (error.name === "ValidationError") {
+            return res.status(400).json({ error: error.message });
+        }
+        res.status(500).json({ error: "Internal server error" });
     }
 }
 
