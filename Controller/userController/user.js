@@ -1,108 +1,98 @@
-const { getDB } = require("../../Config/db");
+const User = require("../../models/user.model");
 
-// get users
+// get all users
 exports.getAllUsers = async (req, res) => {
-    try {
-        const db = getDB()
-        const usersCollection = db.collection("users");
-        const result = await usersCollection.find().toArray();
-        res.send(result);
-    } catch (error) {
-        res.status(500).send('internal server error')
+  try {
+    const result = await User.find();
+    if (result.length === 0) {
+      return res.status(200).json({ message: "No users available now" });
     }
-}
+    res.status(200).json({ data: result });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 // update user activity 
 exports.updateUserIsOnlineStatus = async (req, res) => {
-    try {
-        const { email, isOnline, lastSignInTime } = req.body;
-        const query = { email: email };
-        console.log(email, lastSignInTime, isOnline);
-        const db = getDB()
-        const usersCollection = db.collection("users");
-        const updatedDoc = {
-            $set: { lastSignInTime: lastSignInTime, isOnline: isOnline },
-        };
-        const result = await usersCollection.updateOne(query, updatedDoc);
-        res.send(result);
-    } catch (error) {
-        res.status(500).json('internal server error')
+  try {
+    const { email, isOnline, lastSignInTime } = req.body;
+    const result = await User.findOneAndUpdate(
+      { email },
+      { lastSignInTime, isOnline },
+      { new: true }
+    );
+    if (!result) {
+      return res.status(404).json({ message: "User not found" });
     }
+    res.status(200).json({ message: "User updated", data: result });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
-
-
 
 // delete a user
 exports.deleteUser = async (req, res) => {
-    try {
-        const db = getDB()
-        const usersCollection = db.collection("users");
-        const id = req.params.id;
-        const query = { _id: new ObjectId(id) };
-        const result = await usersCollection.deleteOne(query);
-        res.send(result);
-    } catch (error) {
-        res.status(500).json('internal server error')
+  try {
+    const id = req.params.id;
+    const result = await User.findByIdAndDelete(id);
+    if (!result) {
+      return res.status(404).json({ message: "User not found" });
     }
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
-
-
 
 // add a user
 exports.createUser = async (req, res) => {
-    try {
-        const db = getDB()
-        const usersCollection = db.collection("users");
-        const user = req.body;
-        const result = await usersCollection.insertOne(user);
-        res.send(result);
-    } catch (error) {
-        res.status(500).json('internal server error')
-    }
+  try {
+    const user = req.body;
+    const newUser = new User(user);
+    const result = await newUser.save();
+    res.status(201).json({ message: "User created successfully", data: result });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
-
-
 
 // get active users
 exports.getActiveUser = async (req, res) => {
-    try {
-        const db = getDB()
-        const usersCollection = db.collection("users");
-        const query = { isOnline: true };
-        const result = await usersCollection.find(query).toArray();
-        console.log(result);
-        res.send(result);
-    } catch (error) {
-        res.status(500).json('internal server error ')
+  try {
+    const result = await User.find({ isOnline: true });
+    if (result.length === 0) {
+      return res.status(200).json({ message: "No active users found" });
     }
+    res.status(200).json({ data: result });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
-
+// get deactive users
 exports.getDeactiveUser = async (req, res) => {
-    try {
-        const db = getDB()
-        const usersCollection = db.collection("users");
-        const query = { isOnline: false };
-        const result = await usersCollection.find(query).toArray();
-        console.log(result);
-        res.send(result);
-    } catch (error) {
-        res.status(500).json('internal server error ')
-
+  try {
+    const result = await User.find({ isOnline: false });
+    if (result.length === 0) {
+      return res.status(200).json({ message: "No deactive users found" });
     }
+    res.status(200).json({ data: result });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
-
 
 // get user by id
 exports.getUserDetails = async (req, res) => {
-    try {
-        const db = getDB()
-        const usersCollection = db.collection("users");
-        const id = req.params.id;
-        const query = { _id: new ObjectId(id) };
-        const result = await usersCollection.findOne(query);
-        res.send(result);
-    } catch (error) {
-        res.status(500).json('internal server error ')
+  try {
+    const id = req.params.id;
+    const result = await User.findById(id);
+    if (!result) {
+      return res.status(404).json({ message: "User not found" });
     }
+    res.status(200).json({ data: result });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
 };

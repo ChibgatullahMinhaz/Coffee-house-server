@@ -5,7 +5,10 @@ const Coffee = require("../../models/coffee.model");
 
 exports.getAllCoffee = async (req, res) => {
     try {
-        const coffee = await Coffee.find({});
+        const coffee = await Coffee.find();
+        if (coffee.length === 0) {
+            return res.status(200).json({ message: 'not coffee found' })
+        }
         res.status(200).send(coffee)
     } catch (err) {
         console.error('Error finding users:', err);
@@ -81,11 +84,13 @@ exports.addOneCoffee = async (req, res) => {
 // get coffee by id
 exports.getCoffeeDetails = async (req, res) => {
     try {
-        const db = getDB()
-        const coffeeCollection = db.collection("coffees")
+
         const id = req.params.id;
-        const query = { _id: new ObjectId(id) };
-        const result = await coffeeCollection.findOne(query);
+
+        const result = await Coffee.findById(id);
+        if (!result) {
+            return res.status(404).json({ message: "Coffee not found" });
+        }
         res.send(result);
     } catch (error) {
         res.status(500).json('internal server error')
