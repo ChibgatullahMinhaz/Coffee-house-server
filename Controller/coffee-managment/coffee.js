@@ -84,9 +84,7 @@ exports.addOneCoffee = async (req, res) => {
 // get coffee by id
 exports.getCoffeeDetails = async (req, res) => {
     try {
-
         const id = req.params.id;
-
         const result = await Coffee.findById(id);
         if (!result) {
             return res.status(404).json({ message: "Coffee not found" });
