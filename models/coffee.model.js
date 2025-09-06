@@ -5,18 +5,18 @@ const coffeeSchema = new mongoose.Schema({
     category: {
         type: String,
         enum: [
-            "Espresso","Americano","Latte","Cappuccino","Mocha","Macchiato",
-            "Flat White","Ristretto","Long Black","Cold Brew","Iced Latte",
-            "Iced Mocha","Frappuccino","Affogato","Irish Coffee","Caffè macchiato",
-            "Flat white","Cortado","Café au lait","Iced coffee","Doppio","Frappe",
-            "Red Eye","Lungo","Coffee with cream","Turkish coffee","Breve",
-            "Coffea arabica","Café Cubano","Other"
+            "Espresso", "Americano", "Latte", "Cappuccino", "Mocha", "Macchiato",
+            "Flat White", "Ristretto", "Long Black", "Cold Brew", "Iced Latte",
+            "Iced Mocha", "Frappuccino", "Affogato", "Irish Coffee", "Caffè macchiato",
+            "Flat white", "Cortado", "Café au lait", "Iced coffee", "Doppio", "Frappe",
+            "Red Eye", "Lungo", "Coffee with cream", "Turkish coffee", "Breve",
+            "Coffea arabica", "Café Cubano", "Other"
         ],
         default: "Other"
     },
     description: { type: String, default: '' },
     price: { type: Number, required: true, min: 0 },
-    size: { type: String, enum: ['small','medium','large'], default: 'medium', required: true },
+    sizes: { type: [String], enum: ['small', 'medium', 'large'], default: 'medium', required: true },
     currency: { type: String, default: "BDT" },
     inStock: { type: Boolean, default: true },
     caffeineContent: { type: Number, default: 0 },
