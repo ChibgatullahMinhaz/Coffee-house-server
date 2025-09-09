@@ -65,8 +65,25 @@ exports.deleteCoffee = async (req, res) => {
 // add a coffee
 // @ save on DB
 exports.addOneCoffee = async (req, res) => {
-    const coffeeData = req.body;
     try {
+        // 1️⃣ check if files exist
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).send('No files uploaded.');
+        }
+
+        // 2️⃣ get image paths from req.files
+        // assuming 'images' folder is inside 'public'
+        const imagePaths = req.files.map(file => {
+            // optional: store relative path for frontend
+            return `/images/uploads/${file.filename}`;
+        });
+
+        // 3️⃣ combine form data from req.body with image paths
+        const coffeeData = {
+            ...req.body,
+            images: imagePaths, // add image paths array to DB
+        };
+
         //@ new coffee object with validate 
         const coffee = await Coffee(coffeeData)
         // @ save on db 

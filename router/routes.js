@@ -2,6 +2,7 @@ const express = require('express');
 const { getServer } = require('../Controller/controller');
 const { getAllUsers, updateUserIsOnlineStatus, deleteUser, createUser, getActiveUser, getDeactiveUser, getUserDetails } = require('../Controller/userController/user');
 const { getAllCoffee, getCoffeeDetails, addOneCoffee, updateCoffee, deleteCoffee } = require('../Controller/coffee-managment/coffee');
+const upload = require('../Config/multerConfig');
 const router = express.Router();
 router.get('/', getServer)
 
@@ -21,7 +22,7 @@ router.delete("/users/:id", deleteUser)
 router.get("/activeUsers", getActiveUser)
 router.get("/deactivateUsers", getDeactiveUser)
 router.get("/users/:id", getUserDetails)
-router.post("/coffees", addOneCoffee);
+router.post("/coffees", upload.array("images", 5), addOneCoffee); 
 router.put("/coffees/:id", updateCoffee);
 router.delete("/coffees/:id", deleteCoffee);
 

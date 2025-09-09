@@ -23,7 +23,7 @@ const coffeeSchema = new mongoose.Schema({
     ratings: { type: Number, default: 0 },
     calories: { type: Number, default: 0 },
     tags: [String],
-    image: { type: String },
+    images: [{ type: String, required: true }],
     seasonal: { type: Boolean, default: false },
     quantity: { type: Number, default: 0, required: true },
     ingredients: [String],
