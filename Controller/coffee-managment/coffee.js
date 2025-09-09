@@ -73,10 +73,7 @@ exports.addOneCoffee = async (req, res) => {
 
         // 2️⃣ get image paths from req.files
         // assuming 'images' folder is inside 'public'
-        const imagePaths = req.files.map(file => {
-            // optional: store relative path for frontend
-            return `/images/uploads/${file.filename}`;
-        });
+        const imagePaths = req.files.map(file => file.filename);
 
         // 3️⃣ combine form data from req.body with image paths
         const coffeeData = {

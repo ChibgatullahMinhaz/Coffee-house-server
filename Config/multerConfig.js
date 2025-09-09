@@ -4,17 +4,12 @@ const multer = require('multer')
 const crypto = require('crypto');
 //@ path is a package for get file extension 
 const path = require('path');
-const fs = require('fs');
 
-const uploadPath = path.join(__dirname, "images/uploads");
-// create folder if not exist
-if (!fs.existsSync(uploadPath)) {
-  fs.mkdirSync(uploadPath, { recursive: true });
-}
+
 // @ Configure multer
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, uploadPath)
+        cb(null, "uploads/")
     },
     filename: function (req, file, cb) {
         crypto.randomBytes(10, function (err, name) {
