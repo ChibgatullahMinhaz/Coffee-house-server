@@ -72,6 +72,7 @@ exports.addOneCoffee = async (req, res) => {
         // @ save on db 
         const result = await coffee.save()
         res.status(201).send(result);
+        console.log(result)
     } catch (error) {
         if (error.name === "ValidationError") {
             return res.status(400).json({ error: error.message });
