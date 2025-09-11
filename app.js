@@ -7,7 +7,22 @@ const path = require('path')
 dotenv.config()
 const app = express()
 connectingDB()
-app.use(cors());
+
+
+// CORS middleware
+app.use(cors({
+    origin: 'http://localhost:5173', // frontend URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
+
+// // OPTIONS requests auto handle
+// app.options('*', cors());
+// app.use(cors());
+
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

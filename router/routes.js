@@ -22,8 +22,8 @@ router.delete("/users/:id", deleteUser)
 router.get("/activeUsers", getActiveUser)
 router.get("/deactivateUsers", getDeactiveUser)
 router.get("/users/:id", getUserDetails)
-router.post("/coffees", upload.array("images", 5), addOneCoffee); 
-router.put("/coffees/:id", updateCoffee);
+router.post("/coffees", upload.array("images", 5), addOneCoffee);
+router.put("/coffees/:id", upload.array("images", 5), updateCoffee);
 router.delete("/coffees/:id", deleteCoffee);
 
 

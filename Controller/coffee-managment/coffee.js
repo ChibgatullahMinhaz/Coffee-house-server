@@ -5,7 +5,7 @@ const Coffee = require("../../models/coffee.model");
 
 exports.getAllCoffee = async (req, res) => {
     try {
-        const coffee = await Coffee.find();
+        const coffee = await Coffee.find().sort({ _id: -1 });
         if (coffee.length === 0) {
             return res.status(200).json({ message: 'not coffee found' })
         }
@@ -22,20 +22,82 @@ exports.getAllCoffee = async (req, res) => {
 exports.updateCoffee = async (req, res) => {
     try {
         const id = req.params.id;
-        const coffee = req.body;
 
-        // Check product exists
-        const existing = await Coffee.findById(id);
-        if (!existing) {
-            return res.status(404).json({ msg: "Coffee not found" });
+        // Extract fields from FormData
+        const {
+            name,
+            category,
+            description,
+            price,
+            currency,
+            roastLevel,
+            origin,
+            inStock,
+            available,
+            isSpecial,
+            seasonal,
+            quantity,
+            caffeineContent,
+            calories,
+            ratings,
+            tags = '',
+            ingredients = '',
+        } = req.body;
+
+
+        const sizes = req.body.sizes
+            ? Array.isArray(req.body.sizes)
+                ? req.body.sizes // @ multiple size could be an array 
+                : [req.body.sizes] // @ single size could not an array so need to convert array of string.
+            : [];
+
+        const tagsArray = tags.split(',').map(t => t.trim()).filter(Boolean);
+        /**
+         * split(',) => convert string to Array;
+         * trim() => remove Extra space;
+         * filter=> basically filter return an array basis condition. so, when i use Boolean it's means remove all falsy value
+         * filter(Boolean) => js shorten who has remove all falsy value of any array.
+         */
+        const ingredientsArray = ingredients.split(',').map(i => i.trim()).filter(Boolean);
+
+        // Handle uploaded images
+        let images = [];
+        if (req.files && req.files.length > 0) {
+            //@ get filename array from fils
+            images = req.files.map(f => f.filename);
         }
 
-        // Update product
-        const updatedCoffee = await Coffee.findByIdAndUpdate(id, coffee, {
-            new: true,
-        });
+        // Check if coffee exists
+        const existing = await Coffee.findById(id);
+        if (!existing) return res.status(404).json({ msg: 'Coffee not found' });
 
-        res.json(updatedCoffee);
+        // Prepare update payload
+        const updatePayload = {
+            name,
+            category,
+            description,
+            price,
+            currency,
+            roastLevel,
+            origin,
+            inStock: inStock === 'true' || inStock === true,
+            available: available === 'true' || available === true,
+            isSpecial: isSpecial === 'true' || isSpecial === true,
+            seasonal: seasonal === 'true' || seasonal === true,
+            quantity,
+            caffeineContent,
+            calories,
+            ratings,
+            tags: tagsArray,
+            ingredients: ingredientsArray,
+            sizes,
+            //@ spread all images filesname
+            ...(images.length > 0 && { images }),
+        };
+
+        const updatedCoffee = await Coffee.findByIdAndUpdate(id, updatePayload, { new: true });
+
+        res.status(200).json(updatedCoffee);
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Update failed" });
