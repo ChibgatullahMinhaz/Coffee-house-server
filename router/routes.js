@@ -3,7 +3,10 @@ const { getServer } = require('../Controller/controller');
 const { getAllUsers, updateUserIsOnlineStatus, deleteUser, createUser, getActiveUser, getDeactiveUser, getUserDetails } = require('../Controller/userController/user');
 const { getAllCoffee, getCoffeeDetails, addOneCoffee, updateCoffee, deleteCoffee } = require('../Controller/coffee-managment/coffee');
 const upload = require('../Config/multerConfig');
+const { getAllCategories, addCategories } = require('../Controller/categoryController/categoryController');
 const router = express.Router();
+
+
 router.get('/', getServer)
 
 
@@ -15,6 +18,8 @@ router.get("/coffees", getAllCoffee);
 //coffee details
 router.get("/coffees/:id", getCoffeeDetails);
 
+// @ get all categories for admin side and customer side. 
+router.get('/getAllCategories', getAllCategories)
 
 // admin side controllers 
 router.get('/users', getAllUsers)
@@ -25,7 +30,8 @@ router.get("/users/:id", getUserDetails)
 router.post("/coffees", upload.array("images", 5), addOneCoffee);
 router.put("/coffees/:id", upload.array("images", 5), updateCoffee);
 router.delete("/coffees/:id", deleteCoffee);
-
+// @ add category 
+router.post('/addOneCategory', addCategories)
 
 // customer side controllers
 
