@@ -25,11 +25,15 @@ const UserSchema = new mongoose.Schema({
         enum: ['customer', 'admin', 'rider'],
         default: 'customer'
     },
+    avatar: { type: String, default: null },
+    address: { type: String },
+    phone: { type: String },
+    isBanned: { type: Boolean, default: false },
     createdAt: {
         type: Date,
         default: Date.now
     }
-},{ timestamps: true })
+}, { timestamps: true })
 
 const User = mongoose.model('User', UserSchema);
 module.exports = User;

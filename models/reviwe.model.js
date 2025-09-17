@@ -1,6 +1,6 @@
 const { default: mongoose } = require("mongoose");
 
-const ReviewSchema = new mongoose.Schema({
+const reviewSchema = new mongoose.Schema({
     email: {
         type: String,
         require: true
@@ -8,6 +8,11 @@ const ReviewSchema = new mongoose.Schema({
     name: {
         type: String,
         require: true
+    },
+    userImage: {
+        type: String,
+        default: null,
+        required: true
     },
     productId: {
         type: String,
@@ -21,12 +26,14 @@ const ReviewSchema = new mongoose.Schema({
     rating: {
         type: Number,
         require: true,
-        min: 0
+        min: 1,
+        max: 5,
     },
     isAccept: {
         type: Boolean,
         default: false
-    }
+    }, productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
 }, { timestamps: true })
-const ReviewModal = mongoose.model('Review', ReviewSchema);
-module.exports = ReviewModal;
+
+export default model("Review", reviewSchema);
