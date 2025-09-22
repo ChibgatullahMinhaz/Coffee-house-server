@@ -14,6 +14,7 @@ const coffeeSchema = new mongoose.Schema({
         // ],
         default: "Other"
     },
+    isFeatured: { type: Boolean, default: false },
     description: { type: String, default: '' },
     price: { type: Number, required: true, min: 0 },
     sizes: { type: [String], enum: ['small', 'medium', 'large'], default: 'medium', required: true },
@@ -30,7 +31,9 @@ const coffeeSchema = new mongoose.Schema({
     roastLevel: { type: String },
     origin: { type: String, required: true },
     available: { type: Boolean, required: true },
-    isSpecial: { type: Boolean, required: true }
+    isSpecial: { type: Boolean, required: true },
+    //@ soldCount for get all popular products
+    soldCount: { type: Number, default: 0 }
 }, { timestamps: true });
 
 const Coffee = mongoose.model('Coffee', coffeeSchema);

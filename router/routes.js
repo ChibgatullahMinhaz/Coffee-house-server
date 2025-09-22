@@ -22,9 +22,9 @@ router.get("/coffees/:id", getCoffeeDetails);
 
 
 //@ get all our best products for featured products section 
-router('/popular/coffees', getAllPopularProducts)
+router.get('/popular/coffees', getAllPopularProducts)
 // @ get all popular products
-router('/featured/products', getAllFeaturedProduct)
+router.get('/featured/products', getAllFeaturedProduct)
 
 // @ get all categories for admin side and customer side. 
 router.get('/getAllCategories', getAllCategories)
