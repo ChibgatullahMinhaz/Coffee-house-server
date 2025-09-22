@@ -4,6 +4,7 @@ const { getAllUsers, updateUserIsOnlineStatus, deleteUser, createUser, getActive
 const { getAllCoffee, getCoffeeDetails, addOneCoffee, updateCoffee, deleteCoffee } = require('../Controller/coffee-managment/coffee');
 const upload = require('../Config/multerConfig');
 const { getAllCategories, addCategories } = require('../Controller/categoryController/categoryController');
+const { getAllFeaturedProduct, getAllPopularProducts } = require('../Controller/ProductsListing/productsListing');
 const router = express.Router();
 
 
@@ -17,6 +18,13 @@ router.post("/users", createUser) // create user
 router.get("/coffees", getAllCoffee);
 //coffee details
 router.get("/coffees/:id", getCoffeeDetails);
+
+
+
+//@ get all our best products for featured products section 
+router('/popular/coffees', getAllPopularProducts)
+// @ get all popular products
+router('/featured/products', getAllFeaturedProduct)
 
 // @ get all categories for admin side and customer side. 
 router.get('/getAllCategories', getAllCategories)
